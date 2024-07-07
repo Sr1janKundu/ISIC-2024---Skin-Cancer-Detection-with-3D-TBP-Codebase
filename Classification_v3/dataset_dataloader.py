@@ -9,7 +9,7 @@ from PIL import Image
 
 # Paths
 TRAIN_IMG_DIR = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\train-image\\image"
-TEST_IMG_DIR = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\test-images"
+TEST_IMG_DIR = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\test-images"           # execute utils.save_hdf5_as_jpg(hdf5_path, TEST_IMG_DIR) first
 ANNOTATIONS_FILE = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\train-metadata.csv"
 
 # Image transformations and augmentations

@@ -78,6 +78,7 @@ def load_checkpoint(checkpoint, model):
     model.load_state_dict(checkpoint["state_dict"])
 
 def save_hdf5_as_jpg(hdf5_path, output_jpg_folder_path):
+    os.mkdir(output_jpg_folder_path)
     with h5py.File(hdf5_path, 'r') as hdf5_f:
         for image_name in hdf5_f:
             img = hdf5_f[image_name]
