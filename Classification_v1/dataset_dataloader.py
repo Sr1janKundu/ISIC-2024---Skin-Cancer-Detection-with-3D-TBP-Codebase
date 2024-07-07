@@ -13,7 +13,7 @@ ANNOTATIONS_FILE = "D:/ISIC 2024 - Skin Cancer Detection with 3D-TBP/EDA/isic202
 # ANNOTATIONS_FILE = "D:/ISIC 2024 - Skin Cancer Detection with 3D-TBP/Data/train-metadata.csv"  # CSV file with image names and labels
 
 TRANS = v2.Compose([
-    v2.Resize((224, 224)),      # ???
+    v2.Resize((224, 224)),
     v2.ToImage(),
     v2.RandomRotation(degrees=(0, 360)),
     v2.RandomHorizontalFlip(p=0.5),
