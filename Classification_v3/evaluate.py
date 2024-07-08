@@ -1,9 +1,7 @@
 import torch
 import pandas as pd
-import h5py
 from tqdm import tqdm
 from dataset_dataloader import get_loader
-from torch.utils.data import DataLoader
 import torchvision
 
 # Constants
@@ -27,17 +25,17 @@ def create_submission(model, test_loader):
     image_ids = []
 
     with torch.no_grad():
-        for inputs, image_name in tqdm(test_loader, desc="Evaluating"):
+        for inputs, image_names in tqdm(test_loader, desc="Evaluating"):
             inputs = inputs.to(DEVICE)
             outputs = model(inputs).squeeze(1)
             probs = torch.sigmoid(outputs)
             predictions.extend(probs.cpu().numpy())
-            image_ids.append(image_name[0])
+            image_ids.extend(image_names)  # Append all image names from the batch
 
-    # Get image IDs from the HDF5 file
-    print(len(image_ids), len(predictions))
-    print("Image names", image_ids)
-    print("preds:", predictions)
+    # Check if the lengths match
+    if len(image_ids) != len(predictions):
+        print(f"Warning: Number of image IDs ({len(image_ids)}) does not match number of predictions ({len(predictions)})")
+
     # Create DataFrame
     submission_df = pd.DataFrame({
         'isic_id': image_ids,
