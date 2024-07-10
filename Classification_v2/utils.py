@@ -36,7 +36,7 @@ def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patie
         criterion: Loss function, defaults to BCE with logit loss function
     '''
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)  # Initialize CosineAnnealingLR scheduler
+    scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=25)  # Initialize CosineAnnealingLR scheduler
     scaler = torch.cuda.amp.GradScaler()
 
     best_val_pauc = -1.0  # Initialize with a very low value
@@ -46,7 +46,6 @@ def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patie
         csv_writer = csv.writer(f)
         csv_writer.writerow(['Epoch', 'Training Loss', 'Training Accuracy', 'Validation Loss', 'Validation Accuracy', 'Validation Precision', 'Validation Recall', 'Validation F1 Score', 'Validation pAUC'])
         
-
         for epoch in range(epochs):
             print(f"\n | Epoch: {epoch+1}")
             total_loss = 0
@@ -343,3 +342,39 @@ def visualize_test_images(images, titles=None):
     images, image_ids  = zip(*[test_dataset[i] for i in indices])
     visualize_test_images(images, titles=image_ids)    
     '''
+
+def plot_metrics_from_files(file_paths):
+    num_files = len(file_paths)
+    cols = 5  # One row with five columns
+
+    fig, axes = plt.subplots(1, cols, figsize=(25, 5))  # Create a grid of subplots with 1 row and 5 columns
+
+    for i, file_path in enumerate(file_paths):
+        # Read the CSV file
+        df = pd.read_csv(file_path)
+
+        # Extract relevant columns
+        epochs = df['Epoch']
+        train_loss = df['Training Loss']
+        valid_loss = df['Validation Loss']
+        valid_pAUC = df['Validation pAUC']
+
+        # Plot the data on the respective subplot
+        axes[i].plot(epochs, train_loss, label='Training Loss', marker='o')
+        axes[i].plot(epochs, valid_loss, label='Validation Loss', marker='o')
+        axes[i].plot(epochs, valid_pAUC, label='Validation pAUC', marker='o')
+        
+        # Add titles and labels to each subplot
+        axes[i].set_title(f'File: {file_path.split("/")[-1]}')
+        axes[i].set_xlabel('Epochs')
+        axes[i].set_ylabel('Loss / pAUC')
+        axes[i].legend()
+
+    # Hide any unused subplots if the number of files is less than the grid size
+    # if num_files < cols:
+    #     for j in range(num_files, cols):
+    #         fig.delaxes(axes[j])
+
+    # Adjust layout
+    plt.tight_layout()
+    plt.show()
