@@ -72,7 +72,7 @@ def lesgooo():
                                              train_hdf5_path=TRAIN_HDF5_PATH,
                                              test_hdf5_path=TEST_HDF5_PATH)
             model_resnet = utils.load_model(imagenet_weights_path=RESNET34_IMAGENET_WEIGHTS_PYTORCH)
-            print(f"\nTraining for fold: {fold+1}:\n")
+            print(f"---------------\nTraining for fold: {fold+1}:\n---------------")
             val_pAUC_fold = utils.train(epochs=EPOCHS,
                                         model=model_resnet,
                                         learning_rate=LEARNING_RATE,
