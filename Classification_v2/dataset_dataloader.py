@@ -15,20 +15,6 @@ from sklearn.model_selection import StratifiedShuffleSplit
 
 
 '''
-Paths
-'''
-## Kaggle
-# TRAIN_HDF5_PATH = "/kaggle/input/isic-2024-challenge/train-image.hdf5"
-# TEST_HDF5_PATH = "/kaggle/input/isic-2024-challenge/test-image.hdf5"
-# Local_Srijan
-TRAIN_HDF5_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\train-image.hdf5"
-TEST_HDF5_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\test-image.hdf5"
-## Local_Sruba
-# TRAIN_HDF5_PATH = "E:\\isic-2024-challenge\\Dataset\\train-image.hdf5"
-# TEST_HDF5_PATH = "E:\\isic-2024-challenge\\Dataset\\test-image.hdf5"
-
-
-'''
 Transformations
 '''
 '''Transformations using torchvision.transforms.v2'''
@@ -205,27 +191,32 @@ class ISIC2024_HDF5_ALBUM(Dataset):
 '''
 DataLoader
 '''
-def get_loader(train_labels_df, 
+def get_loader(test_hdf5_path, 
+               train_labels_df = None, 
+               train_hdf5_path = None, 
                dataset_cls=ISIC2024_HDF5_ALBUM,
-               train_hdf5_path=TRAIN_HDF5_PATH, 
-               test_hdf5_path=TEST_HDF5_PATH, 
                train_img_trans=data_transforms_album["train"], 
                test_img_trans=data_transforms_album["test"], 
                batch=32, 
                seed=None):
-    
-    train_dataset_all = dataset_cls(hdf5_path=train_hdf5_path, annotations_df=train_labels_df, transform=train_img_trans)
-    test_dataset = dataset_cls(hdf5_path=test_hdf5_path, transform=test_img_trans)
+    if train_labels_df is not None and train_hdf5_path is not None:
+        train_dataset_all = dataset_cls(hdf5_path=train_hdf5_path, annotations_df=train_labels_df, transform=train_img_trans)
+        test_dataset = dataset_cls(hdf5_path=test_hdf5_path, transform=test_img_trans)
 
-    train_annotations_all = train_labels_df
-    labels = train_annotations_all['target']
-    splitter = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=seed)
-    train_idx, val_idx = next(splitter.split(train_annotations_all, labels))
-    train_subset = Subset(train_dataset_all, train_idx)
-    val_subset = Subset(train_dataset_all, val_idx)
+        train_annotations_all = train_labels_df
+        labels = train_annotations_all['target']
+        splitter = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=seed)
+        train_idx, val_idx = next(splitter.split(train_annotations_all, labels))
+        train_subset = Subset(train_dataset_all, train_idx)
+        val_subset = Subset(train_dataset_all, val_idx)
 
-    train_loader = DataLoader(train_subset, batch_size=batch, shuffle=True)
-    val_loader = DataLoader(val_subset, batch_size=batch, shuffle=True)
-    test_loader = DataLoader(test_dataset, shuffle=False)
+        train_loader = DataLoader(train_subset, batch_size=batch, shuffle=True)
+        val_loader = DataLoader(val_subset, batch_size=batch, shuffle=True)
+        test_loader = DataLoader(test_dataset, shuffle=False)
+
+        return train_loader, val_loader, test_loader
+    else:
+        test_dataset = dataset_cls(hdf5_path=test_hdf5_path, transform=test_img_trans)
+        test_loader = DataLoader(test_dataset, shuffle=False)
     
-    return train_loader, val_loader, test_loader
+        return test_loader

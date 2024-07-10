@@ -1,6 +1,7 @@
 '''
 Imports
 '''
+import csv
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -18,7 +19,7 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
 
-def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patience, log_file, model_save_path, criterion = nn.BCEWithLogitsLoss()):
+def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patience, epsilon, log_file, model_save_path, criterion = nn.BCEWithLogitsLoss()):
     '''
     Training function for ISIC-2024 competition data
     Parameters:
@@ -29,6 +30,7 @@ def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patie
         val_dl: Validation data loader
         min_epoch_train: Train for minimum epoches after which early-stopping kicks in
         patience: Patience for early-stopping
+        epsilon: minimum required improvement in order to go on beyond early-stopping
         log_file: log file location to save logs
         model_save_path: location for saving trained model 
         criterion: Loss function, defaults to BCE with logit loss function
@@ -36,8 +38,101 @@ def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patie
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)  # Initialize CosineAnnealingLR scheduler
     scaler = torch.cuda.amp.GradScaler()
-    
-    pass
+
+    best_val_pauc = -1.0  # Initialize with a very low value
+    current_patience = 0  # Initialize patience counter
+
+    with open(log_file, "w", newline="") as f:
+        csv_writer = csv.writer(f)
+        csv_writer.writerow(['Epoch', 'Training Loss', 'Training Accuracy', 'Validation Loss', 'Validation Accuracy', 'Validation Precision', 'Validation Recall', 'Validation F1 Score', 'Validation pAUC'])
+        
+        best_val_pauc_all = []
+
+        for epoch in range(epochs):
+            print(f"\n | Epoch: {epoch+1}")
+            total_loss = 0
+            num_corr = 0
+            num_samp = 0
+            loop = tqdm(train_dl)
+            model.train()
+
+            for batch_idx, (inputs, labels, _) in enumerate(loop):
+                inputs, labels = inputs.to(DEVICE), labels.to(DEVICE)
+                optimizer.zero_grad()
+                with torch.cuda.amp.autocast():
+                    outputs = model(inputs).squeeze(1)
+                    loss = criterion(outputs, labels.float())
+                
+                if torch.isnan(loss):
+                    print(f"NaN loss detected at batch {batch_idx}")
+                    continue
+                
+                scaler.scale(loss).backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+                scaler.step(optimizer)
+                scaler.update()
+                
+                preds = torch.sigmoid(outputs)
+                num_corr += ((preds > 0.5) == labels).sum()
+                num_samp += preds.size(0)
+                total_loss += loss.item()
+                loop.set_postfix(loss=loss.item())
+            
+            avg_loss = total_loss / len(train_dl)
+            acc = num_corr / num_samp
+            print(f"| Epoch {epoch+1}/{epochs} total training loss: {total_loss}, average training loss: {avg_loss}.")
+            
+            print("On Validation Data:")
+            
+            model.eval()
+            with torch.inference_mode():
+                val_loss, val_acc, val_pre, val_rec, val_f1, val_pauc = evaluate(val_dl, model, criterion)
+            
+            row = [epoch+1, avg_loss, acc.item(), val_loss, val_acc, val_pre, val_rec, val_f1, val_pauc]
+            csv_writer.writerow(row)
+
+            if epoch > min_epoch_train:
+                '''
+                early-stopping code
+                '''
+                if val_pauc > best_val_pauc and (val_pauc - best_val_pauc) > epsilon:
+                    best_val_pauc = val_pauc
+                    print(f'Validation pAUC improved by more than {epsilon}, ({best_val_pauc} > {best_val_pauc})); saving model...')
+                    checkpoint = {
+                        "state_dict": model.state_dict(),
+                        "optimizer": optimizer.state_dict(),
+                    }
+                    save_checkpoint(checkpoint, model_save_path)
+                    print(f'Model saved at {model_save_path}')
+                    current_patience = 0  # Reset patience if there's an improvement
+                else:
+                    current_patience += 1
+                    print(f'Validation pAUC did not improve. Patience left: {patience - current_patience}')
+                    
+                    if current_patience >= patience:
+                        print(f'Early stopping at epoch {epoch+1}...')
+                        break
+            else:
+                '''
+                train for at least min_epoch_train epochs and keep saving best
+                '''
+                if val_pauc > best_val_pauc:
+                    best_val_pauc = val_pauc
+                    checkpoint = {
+                        "state_dict": model.state_dict(),
+                        "optimizer": optimizer.state_dict(),
+                    }
+                    save_checkpoint(checkpoint, model_save_path)
+                    print(f'Model saved at {model_save_path}')
+
+            print(f'Current Best Validation pAUC: {best_val_pauc}')
+            best_val_pauc_all.append(best_val_pauc)
+
+            scheduler.step()  # Update learning rate for next epoch
+        
+    print('Training complete.')
+
+    return np.mean(best_val_pauc_all)
 
 
 def pauc_above_tpr(y_true, y_pred, min_tpr=0.80):
@@ -138,17 +233,24 @@ def load_checkpoint(checkpoint, model):
     model.load_state_dict(checkpoint["state_dict"])
 
 
-def load_model(model_save_path):   # Use this for submission rather than load_checkpoint() defined above
+def load_model(model_save_path = None, imagenet_weights_path = None):   # Use this for submission rather than load_checkpoint() defined above
     '''
     To load model during evaluation on test set
     '''
-    model = torchvision.models.resnet34(weights=None)
-    num_ftrs = model.fc.in_features
-    model.fc = torch.nn.Linear(in_features=num_ftrs, out_features=1)
-    model.load_state_dict(torch.load(model_save_path)["state_dict"])
-    model.to(DEVICE)
-    model.eval()
-
+    if model_save_path:
+        model = torchvision.models.resnet34(weights=None)
+        num_ftrs = model.fc.in_features
+        model.fc = torch.nn.Linear(in_features=num_ftrs, out_features=1)
+        model.load_state_dict(torch.load(model_save_path)["state_dict"])
+        model.to(DEVICE)
+        model.eval()
+    else:
+        model = torchvision.models.resnet34(weights=None)
+        model.load_state_dict(torch.load(imagenet_weights_path))
+        num_ftrs = model.fc.in_features
+        model.fc = nn.Linear(in_features=num_ftrs, out_features=1)
+        model.to(DEVICE)
+        
     return model
 
 
