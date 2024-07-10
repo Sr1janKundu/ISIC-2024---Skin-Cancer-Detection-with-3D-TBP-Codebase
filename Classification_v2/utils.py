@@ -46,7 +46,6 @@ def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patie
         csv_writer = csv.writer(f)
         csv_writer.writerow(['Epoch', 'Training Loss', 'Training Accuracy', 'Validation Loss', 'Validation Accuracy', 'Validation Precision', 'Validation Recall', 'Validation F1 Score', 'Validation pAUC'])
         
-        best_val_pauc_all = []
 
         for epoch in range(epochs):
             print(f"\n | Epoch: {epoch+1}")
@@ -126,13 +125,12 @@ def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patie
                     print(f'Model saved at {model_save_path}')
 
             print(f'Current Best Validation pAUC: {best_val_pauc}')
-            best_val_pauc_all.append(best_val_pauc)
 
             scheduler.step()  # Update learning rate for next epoch
         
     print('Training complete.')
 
-    return np.mean(best_val_pauc_all)
+    return best_val_pauc
 
 
 def pauc_above_tpr(y_true, y_pred, min_tpr=0.80):
