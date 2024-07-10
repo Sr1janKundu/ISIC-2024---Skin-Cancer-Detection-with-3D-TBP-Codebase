@@ -91,7 +91,7 @@ def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patie
             row = [epoch+1, avg_loss, acc.item(), val_loss, val_acc, val_pre, val_rec, val_f1, val_pauc]
             csv_writer.writerow(row)
 
-            if epoch > min_epoch_train:
+            if epoch + 1 > min_epoch_train:
                 '''
                 early-stopping code
                 '''
@@ -110,7 +110,7 @@ def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patie
                     print(f'Validation pAUC did not improve. Patience left: {patience - current_patience}')
                     
                     if current_patience >= patience:
-                        print(f'Early stopping at epoch {epoch+1}...')
+                        print(f'\n---Early stopping at epoch {epoch+1}.---')
                         break
             else:
                 '''
