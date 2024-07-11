@@ -396,4 +396,4 @@ def plot_metrics_from_files(file_paths, save_path=None):
     if save_path:
         plt.savefig(save_path)  # Save the figure if a save path is provided
 
-    plt.show()
+    # plt.show()

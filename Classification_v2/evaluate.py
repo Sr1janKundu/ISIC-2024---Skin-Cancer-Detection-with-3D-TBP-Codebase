@@ -7,7 +7,7 @@ import dataset_dataloader
 '''
 Constants
 '''
-IDX = 4     # get this index form train.lesgoo() or the row index with hightst avg_val_pAUC in log_folds.csv
+IDX = 2     # get this index form train.lesgoo() or the row index with hightst avg_val_pAUC in log_folds.csv
 
 '''
 Paths
