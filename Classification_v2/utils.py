@@ -37,7 +37,7 @@ def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patie
     '''
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     # scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)  # Initialize CosineAnnealingLR scheduler
-    scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
+    scheduler = lr_scheduler.MultiStepLR(optimizer, milestones=[5, 10,  15], gamma=0.1)
     scaler = torch.cuda.amp.GradScaler()
 
     best_val_pauc = -1.0  # Initialize with a very low value
