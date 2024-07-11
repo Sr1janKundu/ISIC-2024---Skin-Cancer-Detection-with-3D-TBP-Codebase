@@ -25,26 +25,26 @@ from dataset_dataloader import get_loader
 # METRICS_PLOT_SAVE_PATH = "/kaggle/working/metrics.png"
 
 ## Local_Srijan
-TRAIN_HDF5_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\train-image.hdf5"
-TEST_HDF5_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\test-image.hdf5"
-ANNOTATIONS_FILE = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\train-metadata.csv"
-MODEL_SAVE_PATH_ = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\"
-LOG_FILE_1 = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codebase\\Classification_v2\\"
-LOG_FILE_2 = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codebase\\Classification_v2\\log_folds.csv"
-RESNET34_IMAGENET_WEIGHTS_PYTORCH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\resnet34-b627a593.pth"        # change properly
-SUBMISSION_FILE_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codebase\\Classification_v2\\submission.csv"
-METRICS_PLOT_SAVE_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codebase\\Classification_v2\\metrics.png"
+# TRAIN_HDF5_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\train-image.hdf5"
+# TEST_HDF5_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\test-image.hdf5"
+# ANNOTATIONS_FILE = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\train-metadata.csv"
+# MODEL_SAVE_PATH_ = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\"
+# LOG_FILE_1 = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codebase\\Classification_v2\\"
+# LOG_FILE_2 = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codebase\\Classification_v2\\log_folds.csv"
+# RESNET34_IMAGENET_WEIGHTS_PYTORCH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\resnet34-b627a593.pth"        # change properly
+# SUBMISSION_FILE_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codebase\\Classification_v2\\submission.csv"
+# METRICS_PLOT_SAVE_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codebase\\Classification_v2\\metrics.png"
 
-## Local_Sruba
-# TRAIN_HDF5_PATH = "E:\\isic-2024-challenge\\Dataset\\train-image.hdf5"
-# TEST_HDF5_PATH = "E:\\isic-2024-challenge\\Dataset\\test-image.hdf5"
-# ANNOTATIONS_FILE = "E:\\isic-2024-challenge\\Dataset\\train-metadata.csv"
-# MODEL_SAVE_PATH_ = "E:\\isic-2024-challenge\\"
-# LOG_FILE_1 = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\"
-# LOG_FILE_2 = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\log_folds.csv"
-# RESNET34_IMAGENET_WEIGHTS_PYTORCH = "E:\\isic-2024-challenge\\resnet34-b627a593.pth"        # change properly
-# SUBMISSION_FILE_PATH = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\submission.csv"
-# METRICS_PLOT_SAVE_PATH = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\metrics.png"
+# Local_Sruba
+TRAIN_HDF5_PATH = "E:\\isic-2024-challenge\\Dataset\\train-image.hdf5"
+TEST_HDF5_PATH = "E:\\isic-2024-challenge\\Dataset\\test-image.hdf5"
+ANNOTATIONS_FILE = "E:\\isic-2024-challenge\\Dataset\\train-metadata.csv"
+MODEL_SAVE_PATH_ = "E:\\isic-2024-challenge\\"
+LOG_FILE_1 = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\"
+LOG_FILE_2 = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\log_folds.csv"
+RESNET34_IMAGENET_WEIGHTS_PYTORCH = "E:\\isic-2024-challenge\\resnet34-b627a593.pth"        # change properly
+SUBMISSION_FILE_PATH = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\submission.csv"
+METRICS_PLOT_SAVE_PATH = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\metrics.png"
 
 
 '''
