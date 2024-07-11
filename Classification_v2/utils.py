@@ -37,7 +37,9 @@ def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patie
     '''
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     # scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)  # Initialize CosineAnnealingLR scheduler
-    scheduler = lr_scheduler.MultiStepLR(optimizer, milestones=[5, 10,  15], gamma=0.1)
+    # scheduler = lr_scheduler.MultiStepLR(optimizer, milestones=[5, 10,  15], gamma=0.1)
+    multiplier = lambda epoch: 0.75
+    scheduler = lr_scheduler.MultiplicativeLR(optimizer, lr_lambda=multiplier)      # multiply learning rate with 0.75 each epoch
     scaler = torch.cuda.amp.GradScaler()
 
     best_val_pauc = -1.0  # Initialize with a very low value
@@ -396,4 +398,4 @@ def plot_metrics_from_files(file_paths, save_path=None):
     if save_path:
         plt.savefig(save_path)  # Save the figure if a save path is provided
 
-    plt.show()
+    # plt.show()
