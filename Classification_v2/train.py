@@ -22,6 +22,7 @@ from dataset_dataloader import get_loader
 # LOG_FILE_2 = "/kaggle/working/log_folds.csv"
 # RESNET34_IMAGENET_WEIGHTS_PYTORCH = "/kaggle/input/resnet34-weights/pytorch/nan/1/resnet34-b627a593.pth"        # change properly
 # SUBMISSION_FILE_PATH = "/kaggle/working/submission.csv"
+METRICS_PLOT_SAVE_PATH = "/kaggle/working/metrics.png"
 
 ## Local_Srijan
 TRAIN_HDF5_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\train-image.hdf5"
@@ -32,6 +33,7 @@ LOG_FILE_1 = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codebase\\Class
 LOG_FILE_2 = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codebase\\Classification_v2\\log_folds.csv"
 RESNET34_IMAGENET_WEIGHTS_PYTORCH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\resnet34-b627a593.pth"        # change properly
 SUBMISSION_FILE_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codebase\\Classification_v2\\submission.csv"
+METRICS_PLOT_SAVE_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codebase\\Classification_v2\\metrics.png"
 
 ## Local_Sruba
 # TRAIN_HDF5_PATH = "E:\\isic-2024-challenge\\Dataset\\train-image.hdf5"
@@ -42,6 +44,8 @@ SUBMISSION_FILE_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Codeb
 # LOG_FILE_2 = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\log_folds.csv"
 # RESNET34_IMAGENET_WEIGHTS_PYTORCH = "E:\\isic-2024-challenge\\resnet34-b627a593.pth"        # change properly
 # SUBMISSION_FILE_PATH = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\submission.csv"
+METRICS_PLOT_SAVE_PATH = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\metrics.png"
+
 
 '''
 Constants
@@ -54,7 +58,7 @@ MIN_EPOCH_TRAIN = 10
 PATIENCE = 5
 EPSILON = 0.0025
 NEG_POS_RATIO = 10
-FOLDS = 5
+FOLDS = 3
 
 
 def lesgooo():
@@ -86,6 +90,9 @@ def lesgooo():
             val_pAUC.append(val_pAUC_fold)
             csv_writer.writerow([fold, os.path.basename(os.path.join(MODEL_SAVE_PATH_, f'model_resnet34_aug_fold_{fold}.pth')), val_pAUC_fold]) # Logging avg pauc for the model trained on each fold
     best_model_fold_index = val_pAUC.index(max(val_pAUC))
+    
+    file_paths = [os.path.join(LOG_FILE_1, f'log_res34_aug_fold_{i}.csv') for i in range(5)]
+    utils.plot_metrics_from_files(file_paths, save_path=METRICS_PLOT_SAVE_PATH)
     
     return best_model_fold_index 
 
