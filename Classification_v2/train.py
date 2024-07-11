@@ -22,7 +22,7 @@ from dataset_dataloader import get_loader
 # LOG_FILE_2 = "/kaggle/working/log_folds.csv"
 # RESNET34_IMAGENET_WEIGHTS_PYTORCH = "/kaggle/input/resnet34-weights/pytorch/nan/1/resnet34-b627a593.pth"        # change properly
 # SUBMISSION_FILE_PATH = "/kaggle/working/submission.csv"
-METRICS_PLOT_SAVE_PATH = "/kaggle/working/metrics.png"
+# METRICS_PLOT_SAVE_PATH = "/kaggle/working/metrics.png"
 
 ## Local_Srijan
 TRAIN_HDF5_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Data\\train-image.hdf5"
@@ -44,7 +44,7 @@ METRICS_PLOT_SAVE_PATH = "D:\\ISIC 2024 - Skin Cancer Detection with 3D-TBP\\Cod
 # LOG_FILE_2 = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\log_folds.csv"
 # RESNET34_IMAGENET_WEIGHTS_PYTORCH = "E:\\isic-2024-challenge\\resnet34-b627a593.pth"        # change properly
 # SUBMISSION_FILE_PATH = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\submission.csv"
-METRICS_PLOT_SAVE_PATH = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\metrics.png"
+# METRICS_PLOT_SAVE_PATH = "E:\\isic-2024-challenge\\Codebase\\Classification_v2\\metrics.png"
 
 
 '''
