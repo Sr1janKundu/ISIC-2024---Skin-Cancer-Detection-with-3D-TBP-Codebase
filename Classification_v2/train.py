@@ -56,9 +56,9 @@ CLASSES = 1
 EPOCHS = 50
 MIN_EPOCH_TRAIN = 10
 PATIENCE = 5
-EPSILON = 0.0025
+EPSILON = 0.0005
 NEG_POS_RATIO = 20
-FOLDS = 3
+FOLDS = 1
 
 
 def lesgooo():
@@ -91,7 +91,7 @@ def lesgooo():
             csv_writer.writerow([fold, os.path.basename(os.path.join(MODEL_SAVE_PATH_, f'model_resnet34_aug_fold_{fold}.pth')), val_pAUC_fold]) # Logging avg pauc for the model trained on each fold
     best_model_fold_index = val_pAUC.index(max(val_pAUC))
     
-    file_paths = [os.path.join(LOG_FILE_1, f'log_res34_aug_fold_{i}.csv') for i in range(5)]
+    file_paths = [os.path.join(LOG_FILE_1, f'log_res34_aug_fold_{i}.csv') for i in range(FOLDS)]
     utils.plot_metrics_from_files(file_paths, save_path=METRICS_PLOT_SAVE_PATH)
     
     return best_model_fold_index 

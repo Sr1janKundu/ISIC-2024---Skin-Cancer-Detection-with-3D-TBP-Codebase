@@ -36,7 +36,8 @@ def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patie
         criterion: Loss function, defaults to BCE with logit loss function
     '''
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)  # Initialize CosineAnnealingLR scheduler
+    # scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)  # Initialize CosineAnnealingLR scheduler
+    scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
     scaler = torch.cuda.amp.GradScaler()
 
     best_val_pauc = -1.0  # Initialize with a very low value
@@ -85,8 +86,8 @@ def train(epochs, model, learning_rate, train_dl, val_dl, min_epoch_train, patie
             model.eval()
             with torch.inference_mode():
                 val_loss, val_acc, val_pre, val_rec, val_f1, val_pauc = evaluate(val_dl, model, criterion)
-            
-            row = [epoch+1, scheduler.get_last_lr(), avg_loss, acc.item(), val_loss, val_acc, val_pre, val_rec, val_f1, val_pauc]
+            print("learning rate:", scheduler.get_last_lr()[0])
+            row = [epoch+1, scheduler.get_last_lr()[0], avg_loss, acc.item(), val_loss, val_acc, val_pre, val_rec, val_f1, val_pauc]
             csv_writer.writerow(row)
 
             if epoch + 1 > min_epoch_train:
@@ -343,12 +344,20 @@ def visualize_test_images(images, titles=None):
     visualize_test_images(images, titles=image_ids)    
     '''
 
-def plot_metrics_from_files(file_paths, save_path = None):
+
+def plot_metrics_from_files(file_paths, save_path=None):
+    '''
+    
+    '''
     num_files = len(file_paths)
-    cols = 5  # One row with five columns
+    rows = 3  # Three rows for three types of plots
+    cols = num_files  # One column per file
 
-    fig, axes = plt.subplots(1, cols, figsize=(25, 5))  # Create a grid of subplots with 1 row and 5 columns
-
+    fig, axes = plt.subplots(rows, cols, figsize=(10 * cols, 10))  # Create a grid of subplots
+    
+    if num_files == 1:
+        axes = axes[:, None]
+    
     for i, file_path in enumerate(file_paths):
         # Read the CSV file
         df = pd.read_csv(file_path)
@@ -360,25 +369,31 @@ def plot_metrics_from_files(file_paths, save_path = None):
         valid_loss = df['Validation Loss']
         valid_pAUC = df['Validation pAUC']
 
-        # Plot the data on the respective subplot
-        axes[i].plot(epochs, train_loss, label='Training Loss', marker='o')
-        axes[i].plot(epochs, learning_rate, label='Learning Rate', marker='o')
-        axes[i].plot(epochs, valid_loss, label='Validation Loss', marker='o')
-        axes[i].plot(epochs, valid_pAUC, label='Validation pAUC', marker='o')
-        
-        # Add titles and labels to each subplot
-        axes[i].set_title(f'File: {file_path.split("/")[-1]}')
-        axes[i].set_xlabel('Epochs')
-        axes[i].set_ylabel('Loss, pAUC, learnig rate')
-        axes[i].legend()
+        # Plot training loss and validation loss
+        axes[0, i].plot(epochs, train_loss, label='Training Loss', marker='o')
+        axes[0, i].plot(epochs, valid_loss, label='Validation Loss', marker='o')
+        axes[0, i].set_title(f'File: {file_path.split("/")[-1]}')
+        axes[0, i].set_xlabel('Epochs')
+        axes[0, i].set_ylabel('Loss')
+        axes[0, i].legend()
 
-    # Hide any unused subplots if the number of files is less than the grid size
-    # if num_files < cols:
-    #     for j in range(num_files, cols):
-    #         fig.delaxes(axes[j])
+        # Plot epoch vs learning rate
+        axes[1, i].plot(epochs, learning_rate, label='Learning Rate', marker='o', color='orange')
+        axes[1, i].set_title(f'File: {file_path.split("/")[-1]}')
+        axes[1, i].set_xlabel('Epochs')
+        axes[1, i].set_ylabel('Learning Rate')
+        axes[1, i].legend()
 
-    # Adjust layout
-    plt.tight_layout()
+        # Plot validation pAUC
+        axes[2, i].plot(epochs, valid_pAUC, label='Validation pAUC', marker='o', color='green')
+        axes[2, i].set_title(f'File: {file_path.split("/")[-1]}')
+        axes[2, i].set_xlabel('Epochs')
+        axes[2, i].set_ylabel('Validation pAUC')
+        axes[2, i].legend()
+
+    plt.tight_layout()  # Adjust the layout to prevent overlap
+
     if save_path:
-        plt.savefig(save_path)
+        plt.savefig(save_path)  # Save the figure if a save path is provided
+
     plt.show()
