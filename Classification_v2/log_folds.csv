@@ -1,6 +1,2 @@
 Fold,Model_Name,avg_val_pAUC
-0,model_resnet34_aug_fold_0.pth,0.12440815537733112
-1,model_resnet34_aug_fold_1.pth,0.14864882275260086
-2,model_resnet34_aug_fold_2.pth,0.15857087641318
-3,model_resnet34_aug_fold_3.pth,0.1307308274551486
-4,model_resnet34_aug_fold_4.pth,0.15777530840338838
+0,model_vit_aug_fold_0.pth,0.13477469642799622

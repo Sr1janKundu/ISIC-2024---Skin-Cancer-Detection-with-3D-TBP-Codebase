@@ -1,5 +1,6 @@
 import os
 import csv
+import numpy as np
 import pandas as pd
 import utils
 from dataset_dataloader import get_loader
@@ -32,7 +33,7 @@ def lesgooo():
     val_pAUC = []
     with open(LOG_FILE_2, 'w', newline="") as f:
         csv_writer = csv.writer(f)
-        csv_writer.writerow(['Fold', "Model_Name", "avg_val_pAUC"])
+        csv_writer.writerow(['Fold', "Model_Name", "val_pAUC"])
         for fold in range(FOLDS):
             train_dl, val_dl, _ = get_loader(train_labels_df=annotations_df_trunc,
                                              train_hdf5_path=TRAIN_HDF5_PATH,
@@ -52,7 +53,7 @@ def lesgooo():
             val_pAUC.append(val_pAUC_fold)
             csv_writer.writerow([fold, os.path.basename(os.path.join(MODEL_SAVE_PATH_, f'model_vit_aug_fold_{fold}.pth')), val_pAUC_fold])
     best_model_fold_index = val_pAUC.index(max(val_pAUC))
-    
+    print(f"Average of OOF pAUC: {np.mean(val_pAUC)}")
     file_paths = [os.path.join(LOG_FILE_1, f'log_vit_aug_fold_{i}.csv') for i in range(FOLDS)]
     utils.plot_metrics_from_files(file_paths, save_path=METRICS_PLOT_SAVE_PATH)
     

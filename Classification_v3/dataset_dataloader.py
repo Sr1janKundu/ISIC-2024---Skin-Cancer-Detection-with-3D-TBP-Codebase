@@ -6,6 +6,7 @@ from torch.utils.data import Dataset, DataLoader, Subset
 from torchvision.transforms import v2
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+import cv2
 from PIL import Image
 from sklearn.model_selection import StratifiedShuffleSplit
 
@@ -26,7 +27,7 @@ data_transforms_v2 = {
 
 data_transforms_album = {
     "train": A.Compose([
-        A.Resize(224, 224),
+        A.Resize(224, 224, interpolation=cv2.INTER_AREA),
         A.RandomRotate90(p=0.5),
         A.Flip(p=0.5),
         A.Downscale(p=0.25),
@@ -37,7 +38,7 @@ data_transforms_album = {
         ToTensorV2()], p=1.),
     
     "test": A.Compose([
-        A.Resize(224, 224),
+        A.Resize(224, 224, interpolation=cv2.INTER_AREA),
         A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225], max_pixel_value=255.0, p=1.0),
         ToTensorV2()], p=1.)
 }
